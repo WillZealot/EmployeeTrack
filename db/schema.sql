@@ -17,7 +17,7 @@ FOREIGN KEY (department_id)
 REFERENCES department(id));
 
 CREATE TABLE employee( -- creating an employee table with the role_id being linked to the role table id
-id INT PRIMARY KEY,
+id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 first_name VARCHAR(30),
 last_name VARCHAR(30),
 role_id INT,
