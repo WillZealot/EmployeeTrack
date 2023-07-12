@@ -1,5 +1,6 @@
 const mysql = require('mysql2');
-const inquirer = require('inquirer');// inquirer module for prompting user
+const inquirer = require('inquirer');// inquirer module for prompting user 
+const viewEmployees = require('./public/mitochondria');//importing main function wow
 
 
 const db = mysql.createConnection(						//creating the connection here
@@ -78,16 +79,27 @@ const questions = [
   ];
 
 
+
+
   function promptQuestions() {
     inquirer
       .prompt(questions)
       .then((answers) => {
-        console.log(answers);
-  
+        
         // Additional logic based on prompt answers
         if (answers.DO_WHAT === 'Add Department') {
           console.log(`Added ${answers.DEPARTMENT_NAME} to the database`);
         }
+
+        if (answers.DO_WHAT === 'View Employees') {
+            db.query(
+                `SELECT * FROM employee RIGHT JOIN role ON role.id = employee.role_id`,
+                function(err, results, fields) {
+                  console.log(results); // results contains rows returned by server
+                  console.log(fields); // fields contains extra meta data about results, if available
+                }
+              );
+          }
 
         if (answers.DO_WHAT === 'Quit') {
             console.log('Exiting the program...');
