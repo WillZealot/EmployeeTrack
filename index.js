@@ -101,14 +101,9 @@ const questions = [
         }
 
         if (answers.DO_WHAT === 'View Employees') {
-            db.query(
-                `SELECT * FROM employee RIGHT JOIN role ON role.id = employee.role_id`,
-                function(err, results, fields) {
-                  console.log(results); // results contains rows returned by server
-                  console.log(fields);
-                  promptQuestions(); // fields contains extra meta data about results, if available
-                }
-              );
+          db.query({ sql:'SELECT * FROM `employee` RIGHT JOIN role ON role.id = employee.role_id', rowsAsTables: true }, function(err, results) {
+            console.table(results); // in this query, results will be an array of arrays rather than an array of objects
+          });
           }
 
         if (answers.DO_WHAT === 'Quit') {
