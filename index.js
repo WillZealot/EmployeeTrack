@@ -63,7 +63,7 @@ const db = mysql.createConnection(						//creating the connection here
               viewDepartments();
               break;
             case 'View Roles':
-              //viewRoles();
+              viewRoles();
               break;
             case 'View Employees':
               viewEmployees();
@@ -105,25 +105,41 @@ db.query(`SELECT * FROM department;`, (err, result) => {
 });
 }
 
-function addDepartment(){
+function addDepartment() {
   inquirer
-  .prompt([
-    {name: 'DEPARTMENT_NAME',
-    message: 'Enter Name Of New Department',
-    type: 'input',}
-  ])
-  .then((answers) => {
-    db.query(`INSERT INTO department (name) VALUES (?)`[answers.DEPARTMENT_NAME], (err, result) => {
-      if (err) {
-        console.error('Error viewing employees:', err);
-        promptMainMenu();
-        return;
+    .prompt([
+      {
+        name: 'DEPARTMENT_NAME',
+        message: 'Enter Name Of New Department',
+        type: 'input',
       }
+    ])
+    .then((answers) => {
+      db.query(`INSERT INTO department (name) VALUES (?);`, [answers.DEPARTMENT_NAME], (err, result) => {
+        if (err) {
+          console.error(err);
+          promptMainMenu();
+          return;
+        } else if (result) {
+          console.log('Added department...');
+          promptQuestions();
+        }
+      });
+    });
+}
+
+function viewRoles(){
+  db.query(`SELECT * FROM role;`, (err, result) => {
+    if(err){
+      console.log(err)
+    }else if (result){
+      console.log('Viewing Roles..');
       console.table(result);
       promptQuestions();
-    });
+    }
   })
-  }
+}
+
     // Function to view all employees
 function viewEmployees() {
   console.log('GRabbing employee details');
@@ -190,13 +206,13 @@ function addEmployee() {
           },
           {
             name: 'EMPLOYEE_MANAGER',
-            message: "Who is the employee's manager",
+            message: "Select a manager",
             type: 'list',
             choices: managerChoices,
           },
         ])
         .then((answers) => {
-          db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [answers.employeeId, answers.roleId], (err) => {
+          db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [answers.FIRST_NAME, answers.LAST_NAME, answers.EMPLOYEE_ROLE, answers.EMPLOYEE_MANAGER], (err) => {
             if (err) {
               console.error('Error Adding employee:', err);
               promptQuestions();
