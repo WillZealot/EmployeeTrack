@@ -11,10 +11,19 @@ const db = mysql.createConnection(						//creating the connection here
     // TODO: Add MySQL password
     password: 'Arzamas16$2023',
     database: 'company_db'
-  },
-  console.log(`Connected to the Employee database.`)
+  }
 );
 
+db.connect((error) => {
+  if (error) {
+    console.error('Error connecting to the database:', error);
+    return;
+  }
+
+  console.log('Connected to the Employee database.');
+
+  promptQuestions(); // Call the function to start prompting the user
+});
 
 const questions = [
     { name: 'DO_WHAT', message: 'What would you like to do?', type: 'list', choices: [
@@ -96,7 +105,8 @@ const questions = [
                 `SELECT * FROM employee RIGHT JOIN role ON role.id = employee.role_id`,
                 function(err, results, fields) {
                   console.log(results); // results contains rows returned by server
-                  console.log(fields); // fields contains extra meta data about results, if available
+                  console.log(fields);
+                  promptQuestions(); // fields contains extra meta data about results, if available
                 }
               );
           }
@@ -113,5 +123,3 @@ const questions = [
         console.error('Error:', error);
       });
   }
-  
-  promptQuestions();

@@ -19,7 +19,7 @@
   "homepage": "https://github.com/WillZealot/EmployeeTrack#readme",
   "dependencies": {
     "clear": "^0.1.0",
-    "inquirer": "^8.2.5",
+    "inquirer": "^8.2.4",
     "mysql2": "^3.5.0"
   }
 }
