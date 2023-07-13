@@ -340,7 +340,7 @@ function updateEmployeeRole(){
                       default:
                         role = 1;
     }
-    db.query('UPDATE employee SET role_id = ? WHERE id = ? VALUES (?,?)', [employee, role], (err) => {
+    db.query('UPDATE employee SET role_id = ? WHERE employee.sid = ?', [employee, role], (err) => {
       if (err) {
         console.error('Error Updating role:', err);
         promptQuestions();
