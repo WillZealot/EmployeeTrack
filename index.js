@@ -143,9 +143,9 @@ function viewRoles(){
 
     // Function to view all employees
 function viewEmployees() {
-  console.log('GRabbing employee details');
+  console.log('Retrieving employee details...');
   db.query(`
-  SELECT employee.sid, employee.first_name, employee.last_name, role.title AS role, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager_id
+  SELECT employee.sid, employee.first_name, employee.last_name, role.title AS role, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
   FROM employee
   INNER JOIN role ON employee.role_id = role.id
   INNER JOIN department ON role.department_id = department.id
@@ -153,7 +153,7 @@ function viewEmployees() {
 `, (err, results) => {
     if (err) {
       console.error('Error viewing employees:', err);
-      promptMainMenu();
+      promptQuestions();
       return;
     }
     console.table(results);
@@ -163,28 +163,24 @@ function viewEmployees() {
 //////////////////////////////////////
 //add employee function
 function addEmployee() {
-  const roleQuery = 'SELECT title FROM role';
-  const managerQuery = 'SELECT CONCAT(first_name, " ", last_name) AS manager, id FROM employee WHERE manager_id IS NULL';
 
-  db.query(roleQuery, (roleErr, roleResults) => {
-    if (roleErr) {
+  db.query('SELECT title FROM role', (err, roleResults) => {
+    if (err) {
       console.error('Error fetching roles:', roleErr);
-      promptQuestions();
       return;
     }
 
     const roleChoices = roleResults.map((row) => row.title);
 
-    db.query(managerQuery, (managerErr, managerResults) => {
+    db.query('SELECT first_name FROM employee WHERE manager_id IS NOT NULL', (managerErr, managerResults) => {
       if (managerErr) {
         console.error('Error fetching managers:', managerErr);
-        promptQuestions();
         return;
       }
 
       const managerChoices = managerResults.map((row) => ({
-        name: row.manager,
-        value: row.id,
+        name: row.first_name,
+        value: row.first_name,
       }));
 
       inquirer
@@ -213,7 +209,57 @@ function addEmployee() {
           },
         ])
         .then((answers) => {
-          db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [answers.FIRST_NAME, answers.LAST_NAME, answers.EMPLOYEE_ROLE, answers.EMPLOYEE_MANAGER], (err) => {
+          switch(answers.EMPLOYEE_ROLE){
+            case 'Sales Person':
+              roletype = 1;
+              break;
+            case 'Lead Engineer':
+              roletype = 2;
+              break;
+            case 'Software Engineer':
+              roletype = 3;
+              break;
+              case 'Legal Team Lead':
+              roletype = 4;
+              break;
+              case 'Lawyer':
+              roletype = 5;
+              break;
+              case 'Accountant':
+              roletype = 6;
+              break;
+              case 'Account Manager':
+              roletype = 7;
+              break;
+              case 'Sales Lead':
+              roletype = 8;
+              break;
+
+          }
+          switch(answers.EMPLOYEE_MANAGER){
+            case 'John':
+              manager = 1;
+              break;
+            case 'Jane':
+              manager = 2;
+              break;
+            case 'Chris':
+              manager = 4;
+              break;
+              case 'Arnold':
+              manager = 5;
+              break;
+              case 'Ronnie':
+              manager = 6;
+              break;
+              case 'Jay':
+              manager = 7;
+              break;
+              case 'Lou':
+              manager = 7;
+              break;
+          }
+          db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [answers.FIRST_NAME, answers.LAST_NAME, roletype, manager], (err) => {
             if (err) {
               console.error('Error Adding employee:', err);
               promptQuestions();
