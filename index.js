@@ -1,30 +1,5 @@
-const mysql = require('mysql2');
 const inquirer = require('inquirer');// inquirer module for prompting user 
-
-const db = mysql.createConnection(						//creating the connection here
-  {
-    host: 'localhost',
-    // MySQL username,
-    user: 'root',
-    // TODO: Add MySQL password
-    password: 'Arzamas16$2023',
-    database: 'company_db'
-  }
-);
-
-    //{name: 'ROLE_NAME',
-    //message: 'Enter Name Of New Role',
-    //type: 'input',
-    //when: (answers) => answers.DO_WHAT === 'Add Role'},
-    //{name: 'ROLE_SALARY',
-    //message: 'What is the salary of the role',
-    //type: 'input',
-    //when: (answers) => answers.DO_WHAT === 'Add Role'},
-    //{name: 'WHAT_DEPARTMENT_ROLE',
-    //message: 'Which department does the role belong to?',
-    //type: 'list', choices: [`SELECT * FROM department`], // THIS NEEDS TO HAVE THE LIST OF DEPARTMENTS FROM THE DEPARTMENT TABLE !!!
-    //when: (answers) => answers.DO_WHAT === 'Add Role'}]
-    /////////////////////////////////////////////////////////////
+const db = require('./helper/connection');
 
 // CONNECTING TO DATABASE HERE
 db.connect((error) => {
