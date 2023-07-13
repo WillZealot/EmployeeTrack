@@ -1,7 +1,6 @@
 const mysql = require('mysql2');
 const inquirer = require('inquirer');// inquirer module for prompting user 
 
-
 const db = mysql.createConnection(						//creating the connection here
   {
     host: 'localhost',
@@ -27,6 +26,7 @@ const db = mysql.createConnection(						//creating the connection here
     //when: (answers) => answers.DO_WHAT === 'Add Role'}]
     /////////////////////////////////////////////////////////////
 
+// CONNECTING TO DATABASE HERE
     db.connect((error) => {
       if (error) {
         console.error('Error connecting to the database:', error);
@@ -38,6 +38,7 @@ const db = mysql.createConnection(						//creating the connection here
       promptQuestions(); // Call the function to start prompting the user
     });
 
+// PROMPT QUESTIONS FUNCTION THAT PROMPTS ALL QUESTIONS    
     function promptQuestions() {
       inquirer
         .prompt([
@@ -92,7 +93,7 @@ const db = mysql.createConnection(						//creating the connection here
         });
     }
 
-  
+// VIEW DEPARTMENTS FUNCTION HERE  
 function viewDepartments(){
 db.query(`SELECT * FROM department;`, (err, result) => {
   if (err) {
