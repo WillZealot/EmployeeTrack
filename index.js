@@ -27,7 +27,7 @@ const db = mysql.createConnection(						//creating the connection here
     /////////////////////////////////////////////////////////////
 
 // CONNECTING TO DATABASE HERE
-    db.connect((error) => {
+db.connect((error) => {
       if (error) {
         console.error('Error connecting to the database:', error);
         return;
@@ -36,10 +36,10 @@ const db = mysql.createConnection(						//creating the connection here
       console.log('Connected to the Employee database.');
     
       promptQuestions(); // Call the function to start prompting the user
-    });
+});
 
 // PROMPT QUESTIONS FUNCTION THAT PROMPTS ALL QUESTIONS    
-    function promptQuestions() {
+function promptQuestions() {
       inquirer
         .prompt([
           {
@@ -91,7 +91,7 @@ const db = mysql.createConnection(						//creating the connection here
         .catch((error) => {
           console.error('Error:', error);
         });
-    }
+}
 
 // VIEW DEPARTMENTS FUNCTION HERE  
 function viewDepartments(){
@@ -105,7 +105,7 @@ db.query(`SELECT * FROM department;`, (err, result) => {
   promptQuestions();
 });
 }
-
+// Add Department Function is Here
 function addDepartment() {
   inquirer
     .prompt([
@@ -128,7 +128,7 @@ function addDepartment() {
       });
     });
 }
-
+// Veiw Roles Function Here
 function viewRoles(){
   db.query(`SELECT * FROM role;`, (err, result) => {
     if(err){
@@ -141,7 +141,7 @@ function viewRoles(){
   })
 }
 
-    // Function to view all employees
+// Function to view all employees
 function viewEmployees() {
   console.log('Retrieving employee details...');
   db.query(`
@@ -276,7 +276,7 @@ function addEmployee() {
   });
 }
 
-////////////////////////////////////////update employee function here
+//update employee function here
 function updateEmployeeRole(){
   inquirer
   .prompt([{
@@ -306,3 +306,6 @@ function updateEmployeeRole(){
     console.error('Error:', error);
   });
 }
+
+//todo : implement add role function
+//todo : implement update employee role function
