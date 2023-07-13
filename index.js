@@ -73,7 +73,7 @@ function promptQuestions() {
               addDepartment();
               break;
             case 'Add Role':
-              //addRole();
+              addRole();
               break;
             case 'Add Employee':
               addEmployee();
@@ -234,6 +234,9 @@ function addEmployee() {
               case 'Sales Lead':
               roletype = 8;
               break;
+              default:
+                roletype = 1;
+                break;
 
           }
           switch(answers.EMPLOYEE_MANAGER){
@@ -258,6 +261,9 @@ function addEmployee() {
               case 'Lou':
               manager = 7;
               break;
+              default:
+                manager = 1;
+                break;
           }
           db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [answers.FIRST_NAME, answers.LAST_NAME, roletype, manager], (err) => {
             if (err) {
@@ -306,6 +312,58 @@ function updateEmployeeRole(){
     console.error('Error:', error);
   });
 }
-
 //todo : implement add role function
-//todo : implement update employee role function
+const addRole = () => {
+  db.query('SELECT name FROM department', (err, departmentResults) => {
+    if (err) {
+      console.error('Error fetching roles:', err);
+      return;
+    }
+    const departmentChoices = departmentResults.map((row) => row.name);
+    inquirer
+    .prompt([{
+    name: 'ROLE_NAME',
+    message: 'Enter Name Of New Role',
+    type: 'input'
+    },
+    {name: 'ROLE_SALARY',
+    message: 'What is the salary of the role',
+    type: 'input'},
+    {name: 'WHAT_DEPARTMENT_ROLE',
+    message: 'Which department does the role belong to?',
+    type: 'list', choices: departmentChoices
+    }]
+    )
+    .then((answers) => {
+      switch(answers.WHAT_DEPARTMENT_ROLE){
+        case 'Sales':
+          departmentType = 1;
+          break;
+        case ' Engineering':
+          departmentType = 2;
+          break;
+        case 'Finance':
+          departmentType = 3;
+          break;
+        case 'Legal Team':
+          departmentType = 4;
+          break;
+        default:
+          departmentType = 1;    
+          break;      
+      }
+      db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?)',[answers.ROLE_NAME, answers.ROLE_SALARY, answers.WHAT_DEPARTMENT_ROLE],(err) => {
+        if (err) {
+          console.error('Error Adding Role:', err);
+          promptQuestions();
+          return;
+        }
+        console.log('Role Added successfully!');
+        promptQuestions();
+      });
+      })
+      .catch((error) => {
+      console.error('Error:', error);
+      });
+  });
+}
