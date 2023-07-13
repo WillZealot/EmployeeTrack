@@ -259,21 +259,88 @@ function addEmployee() {
 
 //update employee function here
 function updateEmployeeRole(){
-  inquirer
+  db.query('SELECT first_name FROM employee', (err, employeeChoice) => {
+    if(err){
+      console.log(err,'Error Getting Employee names');
+      return;
+    }
+    const employeeName = employeeChoice.map((row) => row.first_name);
+    db.query('SELECT title FROM role', (err, roleResults) => {
+    if (err) {
+      console.error('Error fetching roles:', roleErr);
+      return;
+    }
+    const roleChoices = roleResults.map((row) => row.title);
+  
+    inquirer
   .prompt([{
-    type: 'input',
-    name: 'employeeId',
-    message: 'Enter the ID of the employee you want to update:',
-    validate: (value) => !isNaN(parseInt(value)),
+    type: 'list',
+    choices: employeeName,
+    name: 'EMPLOYEE_ID',
+    message: 'Select the employee you want to update:',
   },
   {
-    type: 'input',
-    name: 'roleId',
-    message: 'Enter the new role ID for the employee:',
-    validate: (value) => !isNaN(parseInt(value)),
+    type: 'list',
+    choices: roleChoices,
+    name: 'ROLE_ID',
+    message: 'Select the new role ID for the employee:',
   },])
   .then((answers) => {
-    db.query('UPDATE employee SET role_id = ? WHERE id = ?', [answers.employeeId, answers.roleId], (err) => {
+    switch(answers.EMPLOYEE_ID){
+      case 'John':
+        employee = 1;
+        break;
+        case 'Jane':
+          employee = 2;
+          break;
+          case 'Alex':
+            employee = 3;
+            break;
+            case 'Chris':
+              employee = 4;
+              break;
+              case 'Arnold':
+                employee = 5;
+                break;
+                case 'Ronnie':
+                  employee = 6;
+                  break;
+                  case 'Jay':
+                    employee = 7;
+                    case 'Lou':
+                      employee = 8;
+                      break;
+                      default:
+                        employee = 1;
+      }
+      switch(answers.ROLE_ID){
+        case 'Sales Person':
+        role = 1;
+        break;
+        case 'Lead Engineer':
+          role = 2;
+          break;
+          case 'Software Engineer':
+            role = 3;
+            break;
+            case 'Legal Team Lead':
+              role = 4;
+              break;
+              case 'Lawyer':
+                role = 5;
+                break;
+                case 'Accountant':
+                  role = 6;
+                  break;
+                  case 'Account Manager':
+                    role = 7;
+                    case 'Sales Lead':
+                      role = 8;
+                      break;
+                      default:
+                        role = 1;
+    }
+    db.query('UPDATE employee SET role_id = ? WHERE id = ? VALUES (?,?)', [employee, role], (err) => {
       if (err) {
         console.error('Error Updating role:', err);
         promptQuestions();
@@ -286,6 +353,12 @@ function updateEmployeeRole(){
   .catch((error) => {
     console.error('Error:', error);
   });
+    
+
+  });
+  
+  });
+  
 }
 //todo : implement add role function
 const addRole = () => {
