@@ -77,7 +77,7 @@ db.query(`SELECT * FROM department;`, (err, result) => {
     return;
   }
   console.table(result);
-  promptQuestions();
+  promptQuestions(); //propmt questions again
 });
 }
 // Add Department Function is Here
@@ -86,18 +86,18 @@ function addDepartment() {
     .prompt([
       {
         name: 'DEPARTMENT_NAME',
-        message: 'Enter Name Of New Department',
+        message: 'Enter Name Of New Department', //ask for a name of department
         type: 'input',
       }
     ])
-    .then((answers) => {
+    .then((answers) => { //select answer and inserts into appartment
       db.query(`INSERT INTO department (name) VALUES (?);`, [answers.DEPARTMENT_NAME], (err, result) => {
         if (err) {
           console.error(err);
-          promptMainMenu();
+          promptMainMenu(); //if err prompt questions
           return;
         } else if (result) {
-          console.log('Added department...');
+          console.log('Added department...'); //if no err console.log and propmt questions again
           promptQuestions();
         }
       });
@@ -107,10 +107,11 @@ function addDepartment() {
 function viewRoles(){
   db.query(`SELECT * FROM role;`, (err, result) => {
     if(err){
-      console.log(err)
+      console.log(err , 'Error Retreiving Roles'); //if err prompt questions
+      promptQuestions();
     }else if (result){
       console.log('Viewing Roles..');
-      console.table(result);
+      console.table(result); //if no err console.log and propmt questions again
       promptQuestions();
     }
   })
@@ -127,29 +128,31 @@ function viewEmployees() {
   LEFT JOIN employee manager ON employee.manager_id = manager.id
 `, (err, results) => {
     if (err) {
-      console.error('Error viewing employees:', err);
-      promptQuestions();
+      console.error('Error viewing employees:', err); //if err prompt questions
+      promptQuestions(); 
       return;
     }
     console.table(results);
-    promptQuestions();
+    promptQuestions(); //if no err console.log and propmt questions again
   });
 }
 //////////////////////////////////////
 //add employee function
 function addEmployee() {
 
-  db.query('SELECT * FROM role', (err, roleResults) => {
+  db.query('SELECT * FROM role', (err, roleResults) => {//selects all from role table
     if (err) {
-      console.error('Error fetching roles:', roleErr);
+      console.error('Error fetching roles:', roleErr); 
+      promptQuestions();
       return;
     }
 
-    const roleChoices = roleResults.map((row) => ({name : row.title, value: row.id}));
+    const roleChoices = roleResults.map((row) => ({name : row.title, value: row.id})); //extracts specific values from role
 
-    db.query('SELECT * FROM employee', (managerErr, managerResults) => {
-      if (managerErr) {
+    db.query('SELECT * FROM employee', (managerErr, managerResults) => { //selects all from employees
+      if (managerErr) { 
         console.error('Error fetching managers:', managerErr);
+        promptQuestions();
         return;
       }
 
@@ -160,7 +163,7 @@ function addEmployee() {
     value: row.id,
     }));
 
-      inquirer
+      inquirer  //askinfg for new employees information
         .prompt([
           {
             name: 'FIRST_NAME',
@@ -185,10 +188,10 @@ function addEmployee() {
             choices: managerChoices,
           },
         ])
-        .then((answers) => {
+        .then((answers) => { //query is made with corresponding answers
           db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [answers.FIRST_NAME, answers.LAST_NAME, answers.EMPLOYEE_ROLE, answers.EMPLOYEE_MANAGER], (err) => {
             if (err) {
-              console.error('Error Adding employee:', err);
+              console.error('Error Adding employee:', err); //error handle
               promptQuestions();
               return;
             }
@@ -205,21 +208,21 @@ function addEmployee() {
 
 //update employee function here
 function updateEmployeeRole(){
-  db.query('SELECT * FROM employee', (err, employeeChoice) => {
+  db.query('SELECT * FROM employee', (err, employeeChoice) => { //selects all employees
     if(err){
       console.log(err,'Error Getting Employee names');
       return;
     }
-    const employeeName = employeeChoice.map((row) => ({name:row.first_name, value:row.isd}));
+    const employeeName = employeeChoice.map((row) => ({name:row.first_name, value:row.isd})); //extracts specific values based off rows
     db.query('SELECT * FROM role', (err, roleResults) => {
     if (err) {
       console.error('Error fetching roles:', roleErr);
       return;
     }
-    const roleChoices = roleResults.map((row) => ({name:row.title, value:row.id }));
+    const roleChoices = roleResults.map((row) => ({name:row.title, value:row.id })); // deos the same as above except for roles this time
   
     inquirer
-  .prompt([{
+  .prompt([{ //asks questions for who wants to be updated
     type: 'list',
     choices: employeeName,
     name: 'EMPLOYEE_ID',
@@ -231,10 +234,10 @@ function updateEmployeeRole(){
     name: 'ROLE_ID',
     message: 'Select the new role ID for the employee:',
   },])
-  .then((answers) => {
+  .then((answers) => { //populates mysql and then answers questions
     db.query('UPDATE employee SET role_id = ? WHERE employee.id = ?', [answers.ROLE_ID, answers.EMPLOYEE_ID], (err) => {
       if (err) {
-        console.error('Error Updating role:', err);
+        console.error('Error Updating role:', err); //error handling
         promptQuestions();
         return;
       }
@@ -254,13 +257,13 @@ function updateEmployeeRole(){
 const addRole = () => {
   db.query('SELECT * FROM department', (err, departmentResults) => {
     if (err) {
-      console.error('Error fetching roles:', err);
+      console.error('Error fetching roles:', err); //selects from department to later use values for questins answered in inquirer
       return;
     }
-    const departmentChoices = departmentResults.map((row) => ({name:row.name, value:row.id}));
+    const departmentChoices = departmentResults.map((row) => ({name:row.name, value:row.id}));//extracting the specific valuess needded
     inquirer
     .prompt([{
-    name: 'ROLE_NAME',
+    name: 'ROLE_NAME', //asking questions for what role to add
     message: 'Enter Name Of New Role',
     type: 'input'
     },
@@ -271,8 +274,8 @@ const addRole = () => {
     message: 'Which department does the role belong to?',
     type: 'list', choices: departmentChoices
     }]
-    )
-    .then((answers) => {
+    ) 
+    .then((answers) => { //uses answers to fulfill db.query
       db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?)',[answers.ROLE_NAME, answers.ROLE_SALARY, answers.WHAT_DEPARTMENT_ROLE],(err) => {
         if (err) {
           console.error('Error Adding Role:', err);
