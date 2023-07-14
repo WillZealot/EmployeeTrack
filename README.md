@@ -21,6 +21,7 @@ Company Employee Tracker is a command line app that allows you to sort through a
 
 ## Installation
 Clone from my git repository that will be linked here
+https://github.com/WillZealot/EmployeeTrack
 
 ## Usage
 https://watch.screencastify.com/v/arIBlmEpXT4ka9LI47NO
