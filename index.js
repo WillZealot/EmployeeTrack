@@ -139,23 +139,23 @@ function viewEmployees() {
 //add employee function
 function addEmployee() {
 
-  db.query('SELECT title FROM role', (err, roleResults) => {
+  db.query('SELECT * FROM role', (err, roleResults) => {
     if (err) {
       console.error('Error fetching roles:', roleErr);
       return;
     }
 
-    const roleChoices = roleResults.map((row) => row.title);
+    const roleChoices = roleResults.map((row) => ({name : row.title, value: row.id}));
 
-    db.query('SELECT first_name FROM employee WHERE manager_id IS NOT NULL', (managerErr, managerResults) => {
+    db.query('SELECT * FROM employee', (managerErr, managerResults) => {
       if (managerErr) {
         console.error('Error fetching managers:', managerErr);
         return;
       }
 
       const managerChoices = managerResults.map((row) => ({
-        name: row.first_name,
-        value: row.first_name,
+        name: `${row.first_name} ${row.last_name}`,
+        value: row.isd
       }));
 
       inquirer
@@ -184,63 +184,7 @@ function addEmployee() {
           },
         ])
         .then((answers) => {
-          switch(answers.EMPLOYEE_ROLE){
-            case 'Sales Person':
-              roletype = 1;
-              break;
-            case 'Lead Engineer':
-              roletype = 2;
-              break;
-            case 'Software Engineer':
-              roletype = 3;
-              break;
-              case 'Legal Team Lead':
-              roletype = 4;
-              break;
-              case 'Lawyer':
-              roletype = 5;
-              break;
-              case 'Accountant':
-              roletype = 6;
-              break;
-              case 'Account Manager':
-              roletype = 7;
-              break;
-              case 'Sales Lead':
-              roletype = 8;
-              break;
-              default:
-                roletype = 1;
-                break;
-
-          }
-          switch(answers.EMPLOYEE_MANAGER){
-            case 'John':
-              manager = 1;
-              break;
-            case 'Jane':
-              manager = 2;
-              break;
-            case 'Chris':
-              manager = 4;
-              break;
-              case 'Arnold':
-              manager = 5;
-              break;
-              case 'Ronnie':
-              manager = 6;
-              break;
-              case 'Jay':
-              manager = 7;
-              break;
-              case 'Lou':
-              manager = 7;
-              break;
-              default:
-                manager = 1;
-                break;
-          }
-          db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [answers.FIRST_NAME, answers.LAST_NAME, roletype, manager], (err) => {
+          db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)', [answers.FIRST_NAME, answers.LAST_NAME, answers.EMPLOYEE_ROLE, answers.EMPLOYEE_MANAGER], (err) => {
             if (err) {
               console.error('Error Adding employee:', err);
               promptQuestions();
@@ -259,18 +203,18 @@ function addEmployee() {
 
 //update employee function here
 function updateEmployeeRole(){
-  db.query('SELECT first_name FROM employee', (err, employeeChoice) => {
+  db.query('SELECT * FROM employee', (err, employeeChoice) => {
     if(err){
       console.log(err,'Error Getting Employee names');
       return;
     }
-    const employeeName = employeeChoice.map((row) => row.first_name);
-    db.query('SELECT title FROM role', (err, roleResults) => {
+    const employeeName = employeeChoice.map((row) => ({name:row.first_name, value:row.isd}));
+    db.query('SELECT * FROM role', (err, roleResults) => {
     if (err) {
       console.error('Error fetching roles:', roleErr);
       return;
     }
-    const roleChoices = roleResults.map((row) => row.title);
+    const roleChoices = roleResults.map((row) => ({name:row.title, value:row.id }));
   
     inquirer
   .prompt([{
@@ -286,61 +230,7 @@ function updateEmployeeRole(){
     message: 'Select the new role ID for the employee:',
   },])
   .then((answers) => {
-    switch(answers.EMPLOYEE_ID){
-      case 'John':
-        employee = 1;
-        break;
-        case 'Jane':
-          employee = 2;
-          break;
-          case 'Alex':
-            employee = 3;
-            break;
-            case 'Chris':
-              employee = 4;
-              break;
-              case 'Arnold':
-                employee = 5;
-                break;
-                case 'Ronnie':
-                  employee = 6;
-                  break;
-                  case 'Jay':
-                    employee = 7;
-                    case 'Lou':
-                      employee = 8;
-                      break;
-                      default:
-                        employee = 1;
-      }
-      switch(answers.ROLE_ID){
-        case 'Sales Person':
-        role = 1;
-        break;
-        case 'Lead Engineer':
-          role = 2;
-          break;
-          case 'Software Engineer':
-            role = 3;
-            break;
-            case 'Legal Team Lead':
-              role = 4;
-              break;
-              case 'Lawyer':
-                role = 5;
-                break;
-                case 'Accountant':
-                  role = 6;
-                  break;
-                  case 'Account Manager':
-                    role = 7;
-                    case 'Sales Lead':
-                      role = 8;
-                      break;
-                      default:
-                        role = 1;
-    }
-    db.query('UPDATE employee SET role_id = ? WHERE employee.sid = ?', [employee, role], (err) => {
+    db.query('UPDATE employee SET role_id = ? WHERE employee.sid = ?', [answers.ROLE_ID, answers.EMPLOYEE_ID], (err) => {
       if (err) {
         console.error('Error Updating role:', err);
         promptQuestions();
@@ -353,21 +243,19 @@ function updateEmployeeRole(){
   .catch((error) => {
     console.error('Error:', error);
   });
-    
-
   });
-  
   });
   
 }
-//todo : implement add role function
+
+
 const addRole = () => {
-  db.query('SELECT name FROM department', (err, departmentResults) => {
+  db.query('SELECT * FROM department', (err, departmentResults) => {
     if (err) {
       console.error('Error fetching roles:', err);
       return;
     }
-    const departmentChoices = departmentResults.map((row) => row.name);
+    const departmentChoices = departmentResults.map((row) => ({name:row.name, value:row.id}));
     inquirer
     .prompt([{
     name: 'ROLE_NAME',
@@ -383,23 +271,6 @@ const addRole = () => {
     }]
     )
     .then((answers) => {
-      switch(answers.WHAT_DEPARTMENT_ROLE){
-        case 'Sales':
-          departmentType = 1;
-          break;
-        case ' Engineering':
-          departmentType = 2;
-          break;
-        case 'Finance':
-          departmentType = 3;
-          break;
-        case 'Legal Team':
-          departmentType = 4;
-          break;
-        default:
-          departmentType = 1;    
-          break;      
-      }
       db.query('INSERT INTO role (title, salary, department_id) VALUES (?,?,?)',[answers.ROLE_NAME, answers.ROLE_SALARY, answers.WHAT_DEPARTMENT_ROLE],(err) => {
         if (err) {
           console.error('Error Adding Role:', err);
