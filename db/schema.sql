@@ -18,7 +18,7 @@ CREATE TABLE role (
 );
 -- creating an employee table with the role_id being linked to the role table id
 CREATE TABLE employee (
-  sid INT PRIMARY KEY AUTO_INCREMENT,
+  id INT PRIMARY KEY AUTO_INCREMENT,
   first_name VARCHAR(30) NOT NULL,
   last_name VARCHAR(30) NOT NULL,
   role_id INT NOT NULL,

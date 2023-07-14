@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');// inquirer module for prompting user 
-const db = require('./helper/connection');
+const db = require('./public/connection');
 
 // CONNECTING TO DATABASE HERE
 db.connect((error) => {
@@ -120,11 +120,11 @@ function viewRoles(){
 function viewEmployees() {
   console.log('Retrieving employee details...');
   db.query(`
-  SELECT employee.sid, employee.first_name, employee.last_name, role.title AS role, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+  SELECT employee.id, employee.first_name, employee.last_name, role.title AS role, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
   FROM employee
   INNER JOIN role ON employee.role_id = role.id
   INNER JOIN department ON role.department_id = department.id
-  LEFT JOIN employee manager ON employee.manager_id = manager.sid
+  LEFT JOIN employee manager ON employee.manager_id = manager.id
 `, (err, results) => {
     if (err) {
       console.error('Error viewing employees:', err);
@@ -153,10 +153,12 @@ function addEmployee() {
         return;
       }
 
-      const managerChoices = managerResults.map((row) => ({
-        name: `${row.first_name} ${row.last_name}`,
-        value: row.isd
-      }));
+      const managerChoices = managerResults
+    .filter((row) => row.manager_id !== null) // Filter out rows with null manager_id
+    .map((row) => ({
+    name: `${row.first_name} ${row.last_name}`,
+    value: row.id,
+    }));
 
       inquirer
         .prompt([
@@ -230,7 +232,7 @@ function updateEmployeeRole(){
     message: 'Select the new role ID for the employee:',
   },])
   .then((answers) => {
-    db.query('UPDATE employee SET role_id = ? WHERE employee.sid = ?', [answers.ROLE_ID, answers.EMPLOYEE_ID], (err) => {
+    db.query('UPDATE employee SET role_id = ? WHERE employee.id = ?', [answers.ROLE_ID, answers.EMPLOYEE_ID], (err) => {
       if (err) {
         console.error('Error Updating role:', err);
         promptQuestions();
