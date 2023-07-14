@@ -213,7 +213,7 @@ function updateEmployeeRole(){
       console.log(err,'Error Getting Employee names');
       return;
     }
-    const employeeName = employeeChoice.map((row) => ({name:row.first_name, value:row.isd})); //extracts specific values based off rows
+    const employeeName = employeeChoice.map((row) => ({name:row.first_name, value:row.id})); //extracts specific values based off rows
     db.query('SELECT * FROM role', (err, roleResults) => {
     if (err) {
       console.error('Error fetching roles:', roleErr);
